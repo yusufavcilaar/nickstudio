@@ -84,11 +84,12 @@
   .square-btn.random:hover{transform:rotate(15deg)}
   .square-btn[aria-pressed="true"]{background:var(--a1);color:#fff;border-color:var(--a1)}
   .preview-stage{display:grid;place-items:center;min-height:130px;padding:14px 0;text-align:center}
-  .preview-text{font-size:44px;line-height:1.25;font-weight:600;color:var(--txt);word-break:break-word;overflow-wrap:anywhere;max-width:100%;cursor:pointer;transition:font-size .15s,transform .15s,opacity .2s,color .4s;padding:6px 12px;border-radius:14px;position:relative}
+  .preview-text{font-size:44px;line-height:1.25;font-weight:600;color:var(--txt);word-break:break-word;overflow-wrap:anywhere;max-width:100%;cursor:text;transition:font-size .15s,transform .15s,opacity .2s,color .4s;padding:6px 12px;border-radius:14px;position:relative;white-space:pre-wrap;user-select:text}
   .preview-text:hover{background:var(--card-hover)}
   .preview-text.pop{transform:scale(.96);opacity:.85}
   .preview-text.empty{color:var(--faint);font-weight:400;cursor:default}
   .preview-text.empty:hover{background:transparent}
+  .preview-text::selection{background:color-mix(in srgb,var(--sel) 40%,transparent);color:var(--txt)}
   .compare-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 0}
   .compare-stage[hidden]{display:none}
   .compare-panel{display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;transition:.2s}
@@ -298,7 +299,7 @@
         </div>
       </div>
       <div class="preview-stage" id="previewStage">
-        <div class="preview-text empty" id="previewText" role="button" tabindex="0" title="Kopyalamak için tıkla">nickin</div>
+        <div class="preview-text empty" id="previewText" title="Yazıyı buradan da seçebilirsin">nickin</div>
       </div>
       <div class="compare-stage" id="compareStage" hidden>
         <div class="compare-panel" data-side="A">
@@ -848,13 +849,11 @@ function updateCount(){
    ========================================================= */
 function renderPlatformBadges(){
   const wrap = $('#platformBadges');
-  const style = STYLES.find(s => s.name === state.previewStyle) || STYLES[0];
-  const styled = style.fn(getInputText());
-  const len = countGraphemes(styled);
-  const rawLen = countGraphemes($('#text').value);
+  const txt = $('#text').value;
+  const len = countGraphemes(txt);
 
   wrap.innerHTML = '';
-  const useLen = rawLen === 0 ? 0 : len;
+  const useLen = len === 0 ? 0 : len;
   for (const p of PLATFORMS) {
     const fits = useLen <= p.limit;
     const b = document.createElement('span');
@@ -903,26 +902,32 @@ function makeStyleCard(style, index){
 
   // Textarea blur olmasın, seçim kaybolmasın
   btn.addEventListener('mousedown', (e) => {
-    const ta = $('#text');
-    if (document.activeElement === ta) {
+    if (document.activeElement === $('#text')) {
       e.preventDefault();
-      const s = ta.selectionStart, en = ta.selectionEnd;
-      state.lastSel = (s !== en) ? { start: s, end: en } : null;
-    } else if (state.lastSel) {
-      // Bir önceki tıklamadan kalan geçerli seçim varsa koru
     }
   });
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
     if (state.multiSelect) {
       toggleSelection(style.name);
       return;
     }
     const ta = $('#text');
-    const sel = state.lastSel;
-    const valid = sel && sel.start < sel.end && sel.start >= 0 && sel.end <= ta.value.length;
-    if (valid) {
-      applyStyleToSelection(style, btn, sel);
+    
+    // 1. Textarea'daki anlık seçimi kontrol et
+    let s = ta.selectionStart;
+    let en = ta.selectionEnd;
+    
+    // 2. Eğer textarea'daki seçim yoksa, son geçerli seçimi (state.lastSel) kontrol et
+    if (s === en && state.lastSel) {
+      s = state.lastSel.start;
+      en = state.lastSel.end;
+    }
+    
+    const hasSel = s < en && s >= 0 && en <= ta.value.length;
+    
+    if (hasSel) {
+      applyStyleToSelection(style, btn, { start: s, end: en });
     } else {
       copyStyleToClipboard(style, btn);
     }
@@ -936,8 +941,10 @@ function copyStyleToClipboard(style, cardEl){
   copyText(text);
   addToHistory(text, style.name);
   addToRecent(style.name);
-  cardEl.classList.add('copied');
-  setTimeout(() => cardEl.classList.remove('copied'), 900);
+  if (cardEl) {
+    cardEl.classList.add('copied');
+    setTimeout(() => cardEl.classList.remove('copied'), 900);
+  }
 }
 
 function applyStyleToSelection(style, cardEl, sel){
@@ -953,10 +960,9 @@ function applyStyleToSelection(style, cardEl, sel){
 
   ta.value = ta.value.slice(0, start) + styledSelection + ta.value.slice(end);
 
-  ta.focus();
+  ta.focus({ preventScroll: true });
   ta.setSelectionRange(start, start + styledSelection.length);
 
-  // input event tetikle → updateAllValues çalışır → sonra lastSel güncelle
   ta.dispatchEvent(new Event('input'));
   state.lastSel = { start, end: start + styledSelection.length };
   updateSelectionState();
@@ -964,8 +970,11 @@ function applyStyleToSelection(style, cardEl, sel){
   pushUndoState();
   addToRecent(style.name);
   playSound('apply');
-  cardEl.classList.add('applied');
-  setTimeout(() => cardEl.classList.remove('applied'), 900);
+  
+  if (cardEl) {
+    cardEl.classList.add('applied');
+    setTimeout(() => cardEl.classList.remove('applied'), 900);
+  }
   showToast(`"${style.name}" seçime uygulandı`, 'Geri al', undo);
 }
 
@@ -1087,12 +1096,11 @@ function updateAllValues(){
 function updatePreview(){
   const txt = $('#text').value;
   const el = $('#previewText');
-  const style = STYLES.find(s => s.name === state.previewStyle) || STYLES[0];
   if (txt.trim() === '') {
     el.textContent = 'nickin';
     el.classList.add('empty');
   } else {
-    el.textContent = style.fn(txt);
+    el.textContent = txt;
     el.classList.remove('empty');
   }
   el.style.fontSize = state.previewSize + 'px';
@@ -1394,6 +1402,43 @@ function bindEvents(){
     if (document.activeElement === input) captureSelection();
   });
 
+  // Canlı önizlemeden seçim yapıldığında metine eşle
+  function mapPreviewSelectionToTextarea(){
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) return;
+    const selectedText = sel.toString();
+    if (!selectedText.trim()) return;
+
+    const rawText = unstyle(selectedText);
+    const start = input.value.indexOf(rawText);
+
+    if (start !== -1) {
+      state.lastSel = { start, end: start + rawText.length };
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(start, start + rawText.length);
+      updateSelectionState();
+      showToast(`Seçildi: "${rawText}"`, 'İptal', () => {
+        state.lastSel = null;
+        input.setSelectionRange(input.selectionEnd, input.selectionEnd);
+        updateSelectionState();
+      });
+    } else {
+      // Fallback
+      const exactStart = input.value.indexOf(selectedText);
+      if (exactStart !== -1) {
+        state.lastSel = { start: exactStart, end: exactStart + selectedText.length };
+        input.focus({ preventScroll: true });
+        input.setSelectionRange(exactStart, exactStart + selectedText.length);
+        updateSelectionState();
+      } else {
+        showToast('Seçim metinle eşleşmedi');
+      }
+    }
+  }
+  $('#previewText').addEventListener('mouseup', mapPreviewSelectionToTextarea);
+  $('#previewText').addEventListener('keyup', mapPreviewSelectionToTextarea);
+  $('#previewText').addEventListener('touchend', mapPreviewSelectionToTextarea);
+
   // Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y
   input.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
@@ -1502,11 +1547,27 @@ function bindEvents(){
     }, 120);
   });
 
+  // Açılır menü (Dropdown) stili değişimi
   $('#previewStyle').addEventListener('change', e => {
     state.previewStyle = e.target.value;
     safeSave(LS.preview, state.previewStyle);
-    updatePreview();
-    updateCompare();
+    const style = STYLES.find(s => s.name === state.previewStyle) || STYLES[0];
+    const ta = $('#text');
+    
+    let s = ta.selectionStart;
+    let en = ta.selectionEnd;
+    if (s === en && state.lastSel) {
+      s = state.lastSel.start;
+      en = state.lastSel.end;
+    }
+    const hasSel = s < en && s >= 0 && en <= ta.value.length;
+    
+    if (hasSel) {
+      applyStyleToSelection(style, null, { start: s, end: en });
+    } else if (ta.value.trim()) {
+      ta.value = style.fn(unstyle(ta.value));
+      ta.dispatchEvent(new Event('input'));
+    }
     renderPlatformBadges();
   });
 
@@ -1517,13 +1578,30 @@ function bindEvents(){
     updateCompare();
   });
 
+  // Rastgele stil
   $('#randomBtn').addEventListener('click', () => {
     const pool = STYLES.filter(s => s.name !== state.previewStyle);
     const pick = pool[Math.floor(Math.random() * pool.length)];
     state.previewStyle = pick.name;
     $('#previewStyle').value = pick.name;
     safeSave(LS.preview, pick.name);
-    updatePreview();
+    
+    const ta = $('#text');
+    let s = ta.selectionStart;
+    let en = ta.selectionEnd;
+    if (s === en && state.lastSel) {
+      s = state.lastSel.start;
+      en = state.lastSel.end;
+    }
+    const hasSel = s < en && s >= 0 && en <= ta.value.length;
+    
+    if (hasSel) {
+      applyStyleToSelection(pick, null, { start: s, end: en });
+    } else if (ta.value.trim()) {
+      ta.value = pick.fn(unstyle(ta.value));
+      ta.dispatchEvent(new Event('input'));
+    }
+    
     renderPlatformBadges();
     const el = $('#previewText');
     el.classList.add('pop');
@@ -1531,27 +1609,20 @@ function bindEvents(){
   });
 
   const previewEl = $('#previewText');
-  function copyPreview(){
+  // Önizlemeye tıklayınca komple kopyala (seçim yoksa)
+  previewEl.addEventListener('click', (e) => {
+    if (window.getSelection().toString().trim()) return;
     const txt = $('#text').value;
     if (!txt.trim()) { showToast('Önce bir şey yaz ✍'); playSound('error'); return; }
-    const style = STYLES.find(s => s.name === state.previewStyle) || STYLES[0];
-    const text = style.fn(txt);
-    copyText(text);
-    addToHistory(text, style.name);
-    addToRecent(style.name);
+    copyText(txt);
     previewEl.classList.add('pop');
     setTimeout(() => previewEl.classList.remove('pop'), 180);
-  }
-  previewEl.addEventListener('click', copyPreview);
-  previewEl.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyPreview(); }
   });
 
   $('#shareBtn').addEventListener('click', () => {
     const txt = $('#text').value;
     if (!txt.trim()) { showToast('Önce bir şey yaz ✍'); return; }
-    const style = STYLES.find(s => s.name === state.previewStyle) || STYLES[0];
-    shareText(style.fn(txt));
+    shareText(txt);
   });
 
   $('#compareBtn').addEventListener('click', () => setCompareMode(!state.compareMode));
