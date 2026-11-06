@@ -1424,21 +1424,37 @@ function makeStyleCard(style, index){
   val.textContent = style.fn(getInputText());
 
   btn.append(makeCheck(), makeFavBtn(style.name), label, val);
+
+  // ✅ YENİ: mousedown ile seçimi yakala, odağın kaybolmasını engelle
+  btn.addEventListener('mousedown', (e) => {
+    const ta = $('#text');
+    if (document.activeElement === ta) {
+      state.lastSel = { start: ta.selectionStart, end: ta.selectionEnd };
+      e.preventDefault();     // ← textarea blur olmasın, seçim korunsun
+    } else {
+      state.lastSel = { start: 0, end: 0 };
+    }
+  });
+
   btn.addEventListener('click', (e) => {
     if (state.multiSelect) {
       toggleSelection(style.name);
       return;
     }
     const ta = $('#text');
-    const hasSel = ta.selectionStart !== ta.selectionEnd;
+    // ✅ lastSel öncelikli — blur olsa bile seçim kaybolmaz
+    const sel = state.lastSel || { start: ta.selectionStart, end: ta.selectionEnd };
+    const hasSel = sel.start !== sel.end;
     const forceCopy = e.shiftKey;
 
     if (hasSel && !forceCopy) {
-      applyStyleToSelection(style, btn);
+      applyStyleToSelection(style, btn, sel);
     } else {
       copyStyleToClipboard(style, btn, hasSel);
     }
+    state.lastSel = null;
   });
+
   return btn;
 }
 
@@ -1459,14 +1475,13 @@ function copyStyleToClipboard(style, cardEl, wasSelection){
   setTimeout(() => cardEl.classList.remove('copied'), 900);
 }
 
-function applyStyleToSelection(style, cardEl){
+function applyStyleToSelection(style, cardEl, sel){
   const ta = $('#text');
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
+  const start = sel.start;
+  const end = sel.end;
   if (start === end) return;
 
   const selected = ta.value.slice(start, end);
-  // Zaten stillenmiş karakterler varsa önce sadeleştir (zincirleme çalışsın)
   const hasStyled = /[^\x00-\x7F]/.test(selected);
   const baseText = hasStyled ? unstyle(selected) : selected;
   const styledSelection = style.fn(baseText);
@@ -1475,8 +1490,9 @@ function applyStyleToSelection(style, cardEl){
   const after = ta.value.slice(end);
   ta.value = before + styledSelection + after;
 
-  ta.setSelectionRange(start, start + styledSelection.length);
+  // ✅ Önce focus, sonra selection (daha güvenilir)
   ta.focus();
+  ta.setSelectionRange(start, start + styledSelection.length);
 
   ta.dispatchEvent(new Event('input'));
   pushUndoState();
@@ -1536,10 +1552,15 @@ function renderDecorGrid(){
 
   const frag = document.createDocumentFragment();
 
+  // === Kendi Çerçeven kartı ===
   if (hasWrapper && wrapperMatches) {
     const btn = document.createElement('div');
     btn.className = 'card';
     btn.dataset.customWrapper = '1';
+
+    // ✅ EKLE: textarea blur olmasın diye mousedown'ı iptal et
+    btn.addEventListener('mousedown', (e) => e.preventDefault());
+
     const label = document.createElement('span');
     label.className = 'label';
     label.textContent = 'Kendi Çerçeven';
@@ -1547,6 +1568,7 @@ function renderDecorGrid(){
     val.className = 'val';
     val.textContent = `${state.customPrefix}${getInputText()}${state.customSuffix}`;
     btn.append(label, val);
+
     btn.addEventListener('click', () => {
       const text = `${state.customPrefix}${getInputText()}${state.customSuffix}`;
       copyText(text);
@@ -1556,6 +1578,35 @@ function renderDecorGrid(){
     });
     frag.appendChild(btn);
   }
+
+  // === Süs kartları ===
+  list.forEach((d, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'card';
+    btn.style.animationDelay = Math.min(i * 14, 300) + 'ms';
+
+    // ✅ EKLE: textarea blur olmasın diye mousedown'ı iptal et
+    btn.addEventListener('mousedown', (e) => e.preventDefault());
+
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = d.name;
+    const val = document.createElement('span');
+    val.className = 'val';
+    val.textContent = d.fn(getInputText());
+    btn.append(label, val);
+
+    btn.addEventListener('click', () => {
+      const text = d.fn(getInputText());
+      copyText(text);
+      addToHistory(text, d.name);
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 900);
+    });
+    frag.appendChild(btn);
+  });
+  grid.appendChild(frag);
+}
 
   list.forEach((d, i) => {
     const btn = document.createElement('div');
@@ -2199,71 +2250,19 @@ function bindEvents(){
 /* =========================================================
    20) BAŞLAT
    ========================================================= */
-function init(){
-  buildUnstyleMap();
-  const fromHash = loadFromHash();
-
-  const savedTheme = localStorage.getItem(LS.theme);
-  const systemTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-  const initialTheme = fromHash ? state.theme : (savedTheme ? JSON.parse(savedTheme) : systemTheme);
-  applyTheme(['dark','light'].includes(initialTheme) ? initialTheme : 'dark');
-
-  const savedAccent = fromHash ? state.accent : safeParse(LS.accent, 'purple');
-  applyAccent(['purple','pink','cyan','green','orange','blue'].includes(savedAccent) ? savedAccent : 'purple');
-
-  state.soundOn = !!safeParse(LS.sound, false);
-  $('#soundToggle').setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
-  $('#soundToggle').textContent = state.soundOn ? '🔊' : '🔇';
-
-  state.favorites = new Set(safeParse(LS.favorites, []) || []);
-  updateFavCount();
-
-  state.history = safeParse(LS.history, []) || [];
-  state.recent = safeParse(LS.recent, []) || [];
-
-  state.copyCount = parseInt(localStorage.getItem(LS.copyCount) || '0', 10) || 0;
-  updateStats();
-
-  if (!fromHash) {
-    const ps = safeParse(LS.preview, 'Kalın');
-    state.previewStyle = STYLES.some(s => s.name === ps) ? ps : 'Kalın';
-    const pz = safeParse(LS.size, 44);
-    state.previewSize = typeof pz === 'number' && pz >= 20 && pz <= 72 ? pz : 44;
-    state.compareMode = !!safeParse(LS.compare, false);
-    const ca = safeParse(LS.compareA, 'Kalın');
-    const cb = safeParse(LS.compareB, 'El Yazısı');
-    state.compareA = STYLES.some(s => s.name === ca) ? ca : 'Kalın';
-    state.compareB = STYLES.some(s => s.name === cb) ? cb : 'El Yazısı';
-    state.customPrefix = safeParse(LS.prefix, '') || '';
-    state.customSuffix = safeParse(LS.suffix, '') || '';
-    const savedText = localStorage.getItem(LS.text);
-    if (savedText !== null) $('#text').value = savedText;
-  } else {
-    $('#previewSize').value = state.previewSize;
+function buildUnstyleMap(){
+  const test = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  for (const style of STYLES) {
+    for (const c of test) {
+      try {
+        const out = style.fn(c);
+        const chars = [...out];               // ← codepoint bazlı
+        if (chars.length === 1 && chars[0] !== c && !UNSTYLE_MAP.has(chars[0])) {
+          UNSTYLE_MAP.set(chars[0], c);
+        }
+      } catch {}
+    }
   }
-  $('#prefixInput').value = state.customPrefix;
-  $('#suffixInput').value = state.customSuffix;
-
-  if (!fromHash && safeParse(LS.multi, false)) setMultiMode(true);
-
-  fillStyleSelects();
-  $('#previewSize').value = state.previewSize;
-  renderTabs();
-  renderStyleGrid();
-  renderDecorGrid();
-  renderHistory();
-  updateCount();
-
-  renderPlatformBadges();
-  updatePreview();
-  if (state.compareMode) setCompareMode(true);
-
-  // Seed undo stack
-  undoStack.push($('#text').value);
-  updateUndoButtons();
-
-  bindEvents();
-  $('#text').focus();
 }
 
 init();
