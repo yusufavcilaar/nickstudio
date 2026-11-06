@@ -1083,7 +1083,8 @@ const state = {
   customPrefix:'', customSuffix:'',
   multiSelect:false, copyCount:0, soundOn:false,
   compareMode:false, compareA:'Kalın', compareB:'El Yazısı',
-  undoDebounce:null
+  undoDebounce:null,
+  lastSel: null          // ← EKLE
 };
 
 const $ = s => document.querySelector(s);
