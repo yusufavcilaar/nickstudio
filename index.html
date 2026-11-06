@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nick Studio — Fontlu Yazı & Nick Oluşturucu</title>
-<meta name="description" content="Nickini yaz, onlarca font stili ve süsleme arasından seç, tek tıkla kopyala.">
+<meta name="description" content="Metninin bir kısmını seç, istediğin font efektini uygula. Tek tıkla kopyala.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
     --ok:#10b981;
     --warn:#fbbf24;
     --danger:#f87171;
+    --sel:#fbbf24;
   }
   [data-theme="light"]{
     --bg:#f4f2fb; --bg2:#ebe7f7;
@@ -52,7 +53,6 @@
     transition:background .4s ease,color .4s ease;
   }
 
-  /* Background */
   .blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:var(--blob-opacity);pointer-events:none;z-index:0;transition:opacity .4s,background .6s}
   .b1{width:520px;height:520px;background:var(--a1);top:-180px;left:-140px;animation:float1 18s ease-in-out infinite}
   .b2{width:460px;height:460px;background:var(--a2);top:30%;right:-180px;animation:float2 22s ease-in-out infinite}
@@ -86,16 +86,14 @@
   .logo{
     display:grid;place-items:center;width:34px;height:34px;border-radius:10px;
     background:var(--logo-grad);color:#fff;font-size:1rem;
-    box-shadow:0 4px 14px -4px rgba(139,92,246,.6);
-    transition:background .4s;
+    box-shadow:0 4px 14px -4px rgba(139,92,246,.6);transition:background .4s;
   }
   .topbar-actions{display:flex;align-items:center;gap:6px}
   .icon-btn{
     position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;
     background:var(--card);border:1px solid var(--border);
     color:var(--txt);font-family:inherit;font-size:.88rem;font-weight:600;
-    padding:8px 11px;border-radius:10px;cursor:pointer;transition:.2s;
-    min-width:38px;
+    padding:8px 11px;border-radius:10px;cursor:pointer;transition:.2s;min-width:38px;
   }
   .icon-btn:hover{background:var(--card-hover);border-color:var(--border-hover)}
   .icon-btn .badge-count{
@@ -105,21 +103,18 @@
   .icon-btn .badge-count:empty{display:none}
   .icon-btn[aria-pressed="true"]{background:var(--a1);color:#fff;border-color:var(--a1)}
 
-  /* Accent picker */
   .accent-picker{position:relative}
   .accent-dot{
     width:14px;height:14px;border-radius:50%;
     background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
-    box-shadow:0 0 8px var(--a1);
-    transition:background .4s;
+    box-shadow:0 0 8px var(--a1);transition:background .4s;
   }
   .accent-popover{
     position:absolute;top:calc(100% + 8px);right:0;
     background:var(--bg2);border:1px solid var(--border);
     border-radius:14px;padding:10px;
     display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-    box-shadow:var(--shadow);z-index:100;
-    animation:popIn .18s ease;
+    box-shadow:var(--shadow);z-index:100;animation:popIn .18s ease;
   }
   .accent-popover[hidden]{display:none}
   @keyframes popIn{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
@@ -130,7 +125,6 @@
   .accent-popover button:hover{transform:scale(1.15)}
   .accent-popover button.active{border-color:var(--txt)}
 
-  /* Wrap */
   .wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:36px 20px 100px}
 
   /* Preview */
@@ -191,19 +185,12 @@
   .preview-text.empty{color:var(--faint);font-weight:400;cursor:default}
   .preview-text.empty:hover{background:transparent}
 
-  /* Compare mode */
-  .compare-stage{
-    display:grid;grid-template-columns:1fr 1fr;gap:12px;
-    padding:14px 0;
-  }
+  .compare-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 0}
   .compare-stage[hidden]{display:none}
   .compare-panel{
     display:flex;flex-direction:column;gap:10px;
-    padding:14px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:14px;
-    transition:.2s;
+    padding:14px;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;transition:.2s;
   }
   .compare-panel:hover{border-color:var(--border-hover)}
   .compare-panel.active{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 10%,var(--card))}
@@ -215,8 +202,7 @@
   }
   .compare-panel:nth-child(2) .compare-letter{background:var(--a2)}
   .compare-style{
-    flex:1;
-    background:transparent;border:1px solid var(--border);color:var(--txt);
+    flex:1;background:transparent;border:1px solid var(--border);color:var(--txt);
     font-family:inherit;font-size:.78rem;font-weight:600;
     padding:5px 8px;border-radius:7px;cursor:pointer;outline:none;
     transition:.2s;min-width:0;
@@ -224,14 +210,12 @@
   .compare-style:hover{border-color:var(--border-hover)}
   .compare-style option{background:var(--bg2);color:var(--txt)}
   .compare-text{
-    display:grid;place-items:center;
-    min-height:80px;padding:8px;
+    display:grid;place-items:center;min-height:80px;padding:8px;
     text-align:center;font-size:24px;font-weight:600;line-height:1.3;
-    word-break:break-word;overflow-wrap:anywhere;
-    border-radius:10px;transition:.2s;cursor:pointer;
+    word-break:break-word;overflow-wrap:anywhere;border-radius:10px;
+    transition:.2s;cursor:pointer;
   }
   .compare-text:hover{background:var(--card-hover)}
-  .compare-panel.active .compare-text{background:transparent}
   .compare-adopt{
     background:transparent;border:none;color:var(--muted);
     font-family:inherit;font-size:.7rem;font-weight:600;
@@ -240,9 +224,7 @@
   }
   .compare-adopt:hover{color:var(--a1);background:var(--card-hover)}
   .compare-panel.active .compare-adopt{color:var(--a1)}
-  .compare-panel.active .compare-adopt::before{content:"✓ ";color:var(--a1);font-weight:700}
 
-  /* Preview bottom */
   .preview-bottom{display:flex;align-items:center;gap:14px;padding-top:8px;border-top:1px solid var(--border)}
   .preview-bottom label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   input[type="range"]{
@@ -271,18 +253,24 @@
     border-color:color-mix(in srgb,var(--a1) 60%,transparent);
     box-shadow:0 0 0 4px color-mix(in srgb,var(--a1) 13%,transparent);
   }
+  .input-card.selection-active{
+    border-color:color-mix(in srgb,var(--sel) 55%,transparent);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--sel) 15%,transparent);
+  }
   .input-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
   .input-head label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-  .input-head-right{display:flex;align-items:center;gap:10px}
-  #count{font-size:.76rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;transition:color .2s}
+  .input-head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  #count{font-size:.76rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;transition:color .2s;white-space:nowrap}
   #count.warn{color:var(--warn)}
   #count.danger{color:var(--danger)}
+  #count.has-sel{color:var(--sel)}
   .mini-btn{
     background:transparent;border:1px solid var(--border);color:var(--muted);
     padding:4px 9px;border-radius:7px;font-family:inherit;font-size:.72rem;font-weight:600;
     cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:4px;
   }
   .mini-btn:hover{background:var(--card-hover);color:var(--txt);border-color:var(--border-hover)}
+  .mini-btn:disabled{opacity:.4;cursor:not-allowed}
 
   textarea{
     width:100%;min-height:64px;resize:vertical;background:transparent;border:none;outline:none;
@@ -290,18 +278,42 @@
     line-height:1.5;padding:4px 2px;transition:color .4s;
   }
   textarea::placeholder{color:var(--faint);font-weight:500}
+  textarea::selection{background:color-mix(in srgb,var(--sel) 40%,transparent);color:var(--txt)}
+
+  /* Selection indicator */
+  .selection-indicator{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin-top:10px;padding:9px 14px;
+    background:color-mix(in srgb,var(--sel) 12%,transparent);
+    border:1px solid color-mix(in srgb,var(--sel) 40%,transparent);
+    border-radius:10px;
+    font-size:.82rem;font-weight:600;color:var(--txt);
+    animation:selIn .25s ease;
+  }
+  .selection-indicator[hidden]{display:none}
+  @keyframes selIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .sel-icon{font-size:.95rem}
+  .sel-text{flex:1;min-width:0}
+  .sel-text b{color:var(--sel)}
+  .sel-hint{
+    font-size:.72rem;color:var(--muted);font-weight:500;
+    padding:2px 8px;border-radius:6px;
+    background:var(--card);border:1px solid var(--border);
+  }
+  .sel-clear{
+    background:transparent;border:none;color:var(--muted);
+    font-family:inherit;font-size:.78rem;font-weight:700;
+    cursor:pointer;padding:2px 6px;border-radius:5px;transition:.15s;
+  }
+  .sel-clear:hover{color:var(--txt);background:var(--card-hover)}
 
   /* Platform badges */
-  .platform-badges{
-    display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;
-    min-height:0;
-  }
+  .platform-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;min-height:0}
   .platform-badge{
     display:inline-flex;align-items:center;gap:5px;
     padding:3px 9px;border-radius:7px;
     font-size:.68rem;font-weight:600;
-    background:var(--card);border:1px solid var(--border);
-    color:var(--muted);
+    background:var(--card);border:1px solid var(--border);color:var(--muted);
     transition:.2s;
   }
   .platform-badge.ok{color:color-mix(in srgb,var(--ok) 80%,var(--muted));border-color:color-mix(in srgb,var(--ok) 30%,var(--border))}
@@ -322,10 +334,12 @@
     padding:6px 11px;border-radius:8px;cursor:pointer;transition:.2s;
     display:inline-flex;align-items:center;gap:5px;
   }
-  .quick-btn:hover{background:var(--card-hover);color:var(--txt);border-color:var(--border-hover);transform:translateY(-1px)}
-  .quick-btn:active{transform:translateY(0)}
+  .quick-btn:hover:not(:disabled){background:var(--card-hover);color:var(--txt);border-color:var(--border-hover);transform:translateY(-1px)}
+  .quick-btn:active:not(:disabled){transform:translateY(0)}
+  .quick-btn:disabled{opacity:.35;cursor:not-allowed}
   .quick-btn.danger{color:var(--danger)}
-  .quick-btn.danger:hover{background:color-mix(in srgb,var(--danger) 10%,transparent);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+  .quick-btn.danger:hover:not(:disabled){background:color-mix(in srgb,var(--danger) 10%,transparent);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+  .quick-btn.highlight{color:var(--sel);border-color:color-mix(in srgb,var(--sel) 35%,var(--border))}
   .quick-divider{width:1px;background:var(--border);margin:0 2px;flex-shrink:0}
 
   /* Emoji bar */
@@ -338,16 +352,14 @@
     flex-shrink:0;width:32px;height:32px;
     display:grid;place-items:center;
     background:var(--card);border:1px solid var(--border);
-    border-radius:8px;cursor:pointer;font-size:1rem;
-    transition:.15s;
+    border-radius:8px;cursor:pointer;font-size:1rem;transition:.15s;
   }
   .emoji-btn:hover{background:var(--card-hover);border-color:var(--border-hover);transform:scale(1.1)}
 
   /* Wrapper panel */
   .wrapper-panel{
     background:var(--card);border:1px solid var(--border);
-    border-radius:14px;margin-bottom:20px;overflow:hidden;
-    transition:.2s;
+    border-radius:14px;margin-bottom:20px;overflow:hidden;transition:.2s;
   }
   .wrapper-panel[open]{border-color:color-mix(in srgb,var(--a1) 40%,var(--border))}
   .wrapper-panel summary{
@@ -356,10 +368,7 @@
     font-size:.86rem;font-weight:600;color:var(--txt);user-select:none;
   }
   .wrapper-panel summary::-webkit-details-marker{display:none}
-  .wrapper-panel summary::after{
-    content:"▾";margin-left:auto;color:var(--muted);font-size:.8rem;
-    transition:transform .2s;
-  }
+  .wrapper-panel summary::after{content:"▾";margin-left:auto;color:var(--muted);font-size:.8rem;transition:transform .2s}
   .wrapper-panel[open] summary::after{transform:rotate(180deg)}
   .wrapper-icon{font-size:1rem}
   .wrapper-hint{font-size:.72rem;color:var(--muted);font-weight:500}
@@ -441,14 +450,18 @@
     color:var(--a3);opacity:0;transform:translateY(-4px);
     transition:.2s;pointer-events:none;
   }
+  body.has-selection .card::after{content:"uygula";color:var(--sel)}
   .card:hover{
     transform:translateY(-3px);border-color:var(--border-hover);
     background:var(--card-hover);box-shadow:0 14px 34px -14px color-mix(in srgb,var(--a1) 55%,transparent);
   }
+  body.has-selection .card:hover{border-color:color-mix(in srgb,var(--sel) 65%,transparent)}
   .card:hover::after{opacity:.9;transform:translateY(0)}
   .card:active{transform:translateY(-1px) scale(.99)}
   .card.copied{border-color:color-mix(in srgb,var(--a3) 90%,transparent);background:color-mix(in srgb,var(--a3) 13%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--a3) 18%,transparent)}
   .card.copied::after{content:"kopyalandı ✓";opacity:1;color:var(--a3);transform:translateY(0)}
+  .card.applied{border-color:color-mix(in srgb,var(--ok) 90%,transparent);background:color-mix(in srgb,var(--ok) 13%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}
+  .card.applied::after{content:"uygulandı ✓";opacity:1;color:var(--ok);transform:translateY(0)}
   .card.fav-on{border-color:rgba(251,191,36,.4)}
   .label{
     font-size:.64rem;font-weight:700;letter-spacing:.11em;
@@ -576,8 +589,7 @@
     display:inline-flex;align-items:center;gap:6px;
     padding:3px 10px;border-radius:999px;
     background:var(--card);border:1px solid var(--border);
-    font-size:.74rem;font-weight:600;color:var(--muted);
-    margin-top:8px;
+    font-size:.74rem;font-weight:600;color:var(--muted);margin-top:8px;
   }
 
   /* Responsive */
@@ -607,6 +619,8 @@
     .input-card{padding:14px 16px}
     .preview-controls select{max-width:120px;font-size:.76rem}
     .square-btn{width:32px;height:32px;font-size:.9rem}
+    .selection-indicator{padding:8px 11px;font-size:.78rem}
+    .sel-hint{display:none}
   }
   @media (max-width:420px){
     .grid{grid-template-columns:1fr}
@@ -680,12 +694,10 @@
         </div>
       </div>
 
-      <!-- Normal stage -->
       <div class="preview-stage" id="previewStage">
         <div class="preview-text empty" id="previewText" role="button" tabindex="0" title="Kopyalamak için tıkla">nickin</div>
       </div>
 
-      <!-- Compare stage -->
       <div class="compare-stage" id="compareStage" hidden>
         <div class="compare-panel" data-side="A">
           <div class="compare-head">
@@ -713,7 +725,7 @@
   </section>
 
   <!-- INPUT -->
-  <div class="input-card">
+  <div class="input-card" id="inputCard">
     <div class="input-head">
       <label for="text">Yazın</label>
       <div class="input-head-right">
@@ -721,18 +733,30 @@
         <span id="count">0 / 80</span>
       </div>
     </div>
-    <textarea id="text" placeholder="nickini buraya yaz..." maxlength="80" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+    <textarea id="text" placeholder="nickini buraya yaz... bir kısmını seçip efekt uygula" maxlength="80" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+
+    <!-- Selection indicator -->
+    <div class="selection-indicator" id="selectionIndicator" hidden>
+      <span class="sel-icon">✏️</span>
+      <span class="sel-text"><b id="selLen">0</b> karakter seçili — bir stile tıklayarak uygula</span>
+      <span class="sel-hint">Shift+tıkla = kopyala</span>
+      <button class="sel-clear" id="deselectBtn" title="Seçimi kaldır (Esc)">✕</button>
+    </div>
 
     <!-- Platform badges -->
     <div class="platform-badges" id="platformBadges" aria-live="polite"></div>
 
     <!-- Quick tools -->
     <div class="quick-tools" role="toolbar" aria-label="Hızlı metin araçları">
+      <button class="quick-btn" id="undoBtn" title="Geri al (Ctrl+Z)" disabled>↶ Geri</button>
+      <button class="quick-btn" id="redoBtn" title="Yinele (Ctrl+Shift+Z)" disabled>↷ İleri</button>
+      <div class="quick-divider"></div>
       <button class="quick-btn" data-tool="upper">ABC</button>
       <button class="quick-btn" data-tool="lower">abc</button>
       <button class="quick-btn" data-tool="title">Abc</button>
       <button class="quick-btn" data-tool="reverse">↺ Ters</button>
       <button class="quick-btn" data-tool="trim">✂ Kırp</button>
+      <button class="quick-btn highlight" id="unstyleBtn" title="Süslemeleri temizle">✨ Sadeleştir</button>
       <div class="quick-divider"></div>
       <button class="quick-btn" id="pasteBtn">📋 Yapıştır</button>
       <button class="quick-btn" id="copyPlain">Kopyala</button>
@@ -810,13 +834,12 @@
   <footer>
     <div>Yazılar Unicode karakterlerle oluşturulur — her yerde çalışır.</div>
     <div class="foot-note" style="margin-top:6px">
-      <kbd>Ctrl</kbd>+<kbd>K</kbd> yazı alanı · <kbd>Esc</kbd> temizle · <kbd>T</kbd> tema · <kbd>M</kbd> çoklu · <kbd>Shift</kbd>+<kbd>K</kbd> karşılaştır
+      <kbd>Ctrl</kbd>+<kbd>K</kbd> yazı alanı · <kbd>Esc</kbd> temizle · <kbd>T</kbd> tema · <kbd>M</kbd> çoklu · <kbd>Ctrl</kbd>+<kbd>Z</kbd> geri al
     </div>
     <div class="stat-badge" id="statBadge">📋 Toplam 0 kopyalama</div>
   </footer>
 </main>
 
-<!-- MULTI BAR -->
 <div class="multi-bar" id="multiBar" hidden>
   <div class="multi-info"><b id="multiCount">0</b> seçili</div>
   <div class="multi-actions">
@@ -825,7 +848,6 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast" role="status" aria-live="polite">Kopyalandı ✓</div>
 
 <script>
@@ -863,8 +885,8 @@ const dotted        = t => [...t].map(c => c + '\u0307').join('');
 const boxed         = t => [...t].map(c => c + '\u20DE').join('');
 const doubleStrike  = t => [...t].map(c => c + '\u0336\u0336').join('');
 const mirror        = t => [...t].reverse().join('');
-const starred      = t => [...t].filter(c => c !== ' ').map(c => c + '☆').join('');
-const hearted      = t => [...t].filter(c => c !== ' ').map(c => c + '♡').join('');
+const starred       = t => [...t].filter(c => c !== ' ').map(c => c + '☆').join('');
+const hearted       = t => [...t].filter(c => c !== ' ').map(c => c + '♡').join('');
 
 function circled(t) {
   let o = '';
@@ -933,7 +955,7 @@ function regional(t) {
   let o = '';
   for (const ch of t) {
     const c = ch.codePointAt(0);
-    if (c >= 65 && c <= 90)      o += String.fromCodePoint(0x1F1E6 + c - 65);
+    if (c >= 65 && c <= 90)       o += String.fromCodePoint(0x1F1E6 + c - 65);
     else if (c >= 97 && c <= 122) o += String.fromCodePoint(0x1F1E6 + c - 97);
     else o += ch;
   }
@@ -1060,7 +1082,8 @@ const state = {
   previewStyle:'Kalın', previewSize:44,
   customPrefix:'', customSuffix:'',
   multiSelect:false, copyCount:0, soundOn:false,
-  compareMode:false, compareA:'Kalın', compareB:'El Yazısı'
+  compareMode:false, compareA:'Kalın', compareB:'El Yazısı',
+  undoDebounce:null
 };
 
 const $ = s => document.querySelector(s);
@@ -1071,7 +1094,42 @@ function safeSave(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch
 function getInputText(){ const raw = $('#text').value; return raw.trim()==='' ? 'nickin' : raw; }
 function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-function countGraphemes(str) {
+/* =========================================================
+   4) UNSTYLE — Süslemeleri geri çöz
+   ========================================================= */
+const UNSTYLE_MAP = new Map();
+const COMBINING_STRIP = new Set([
+  0x0336, 0x0332, 0x0338, 0x0307, 0x20DE,
+  0x0300, 0x0301, 0x0302, 0x0303, 0x0304
+]);
+
+function buildUnstyleMap(){
+  const test = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  for (const style of STYLES) {
+    for (const c of test) {
+      try {
+        const out = style.fn(c);
+        if (out.length === 1 && out !== c && !UNSTYLE_MAP.has(out)) {
+          UNSTYLE_MAP.set(out, c);
+        }
+      } catch {}
+    }
+  }
+}
+
+function unstyle(str){
+  let out = '';
+  for (const ch of str) {
+    if (COMBINING_STRIP.has(ch.codePointAt(0))) continue;
+    out += UNSTYLE_MAP.get(ch) || ch;
+  }
+  return out;
+}
+
+/* =========================================================
+   5) YARDIMCILAR
+   ========================================================= */
+function countGraphemes(str){
   try {
     if (typeof Intl !== 'undefined' && Intl.Segmenter) {
       const seg = new Intl.Segmenter('tr', { granularity: 'grapheme' });
@@ -1084,7 +1142,7 @@ function countGraphemes(str) {
 }
 
 /* =========================================================
-   4) TOAST
+   6) TOAST
    ========================================================= */
 let toastTimer = null;
 function showToast(msg, actionLabel, actionFn){
@@ -1106,10 +1164,10 @@ function showToast(msg, actionLabel, actionFn){
 }
 
 /* =========================================================
-   5) SES
+   7) SES
    ========================================================= */
 let audioCtx = null;
-function playSound(type = 'copy') {
+function playSound(type = 'copy'){
   if (!state.soundOn) return;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1117,7 +1175,7 @@ function playSound(type = 'copy') {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
-    const freq = type === 'copy' ? 880 : (type === 'error' ? 220 : 660);
+    const freq = type === 'copy' ? 880 : (type === 'error' ? 220 : (type === 'apply' ? 1046 : 660));
     osc.frequency.value = freq;
     osc.type = 'sine';
     const now = audioCtx.currentTime;
@@ -1129,7 +1187,7 @@ function playSound(type = 'copy') {
 }
 
 /* =========================================================
-   6) KOPYALAMA & İSTATİSTİK
+   8) KOPYALAMA & İSTATİSTİK
    ========================================================= */
 async function copyText(text, opts = {}){
   try { await navigator.clipboard.writeText(text); }
@@ -1164,7 +1222,7 @@ function updateStats(){
 }
 
 /* =========================================================
-   7) FAVORİ, GEÇMİŞ, SON KULLANILAN
+   9) FAVORİ, GEÇMİŞ, SON
    ========================================================= */
 function toggleFavorite(name){
   if (state.favorites.has(name)) state.favorites.delete(name);
@@ -1224,7 +1282,92 @@ function renderHistory(){
 }
 
 /* =========================================================
-   8) PLATFORM ROZETLERİ
+   10) UNDO / REDO
+   ========================================================= */
+const undoStack = [];
+const redoStack = [];
+
+function pushUndoState(){
+  const ta = $('#text');
+  const cur = ta.value;
+  if (undoStack.length && undoStack[undoStack.length - 1] === cur) return;
+  undoStack.push(cur);
+  redoStack.length = 0;
+  if (undoStack.length > 30) undoStack.shift();
+  updateUndoButtons();
+}
+
+function undo(){
+  if (undoStack.length < 2) { showToast('Geri alınacak bir şey yok'); return; }
+  clearTimeout(state.undoDebounce);
+  const current = undoStack.pop();
+  redoStack.push(current);
+  const ta = $('#text');
+  ta.value = undoStack[undoStack.length - 1];
+  ta.dispatchEvent(new Event('input'));
+  updateUndoButtons();
+  showToast('Geri alındı');
+}
+
+function redo(){
+  if (!redoStack.length) { showToast('Yinelenecek bir şey yok'); return; }
+  clearTimeout(state.undoDebounce);
+  const val = redoStack.pop();
+  undoStack.push(val);
+  const ta = $('#text');
+  ta.value = val;
+  ta.dispatchEvent(new Event('input'));
+  updateUndoButtons();
+  showToast('Yinelendi');
+}
+
+function updateUndoButtons(){
+  $('#undoBtn').disabled = undoStack.length < 2;
+  $('#redoBtn').disabled = redoStack.length === 0;
+}
+
+/* =========================================================
+   11) SEÇİM TAKİBİ
+   ========================================================= */
+function updateSelectionState(){
+  const ta = $('#text');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const hasSel = start !== end;
+  const len = Math.abs(end - start);
+  const sel = document.getElementById('selectionIndicator');
+  const lenEl = document.getElementById('selLen');
+
+  document.body.classList.toggle('has-selection', hasSel);
+  document.getElementById('inputCard').classList.toggle('selection-active', hasSel);
+
+  if (hasSel && document.activeElement === ta) {
+    sel.hidden = false;
+    lenEl.textContent = len;
+  } else {
+    sel.hidden = true;
+  }
+  updateCount();
+}
+
+function updateCount(){
+  const ta = $('#text');
+  const len = ta.value.length;
+  const selLen = Math.abs(ta.selectionEnd - ta.selectionStart);
+  const c = $('#count');
+  if (selLen > 0) {
+    c.textContent = `${len} / 80 · ${selLen} seçili`;
+    c.classList.add('has-sel');
+  } else {
+    c.textContent = `${len} / 80`;
+    c.classList.remove('has-sel');
+  }
+  c.classList.toggle('warn', len >= 60 && len < 75);
+  c.classList.toggle('danger', len >= 75);
+}
+
+/* =========================================================
+   12) PLATFORM ROZETLERİ
    ========================================================= */
 function renderPlatformBadges(){
   const wrap = $('#platformBadges');
@@ -1234,7 +1377,6 @@ function renderPlatformBadges(){
   const rawLen = countGraphemes($('#text').value);
 
   wrap.innerHTML = '';
-  // If raw text empty, still show limits for reference
   const useLen = rawLen === 0 ? 0 : len;
   for (const p of PLATFORMS) {
     const fits = useLen <= p.limit;
@@ -1247,7 +1389,7 @@ function renderPlatformBadges(){
 }
 
 /* =========================================================
-   9) RENDER
+   13) RENDER
    ========================================================= */
 function makeFavBtn(name){
   const b = document.createElement('button');
@@ -1281,19 +1423,69 @@ function makeStyleCard(style, index){
   val.textContent = style.fn(getInputText());
 
   btn.append(makeCheck(), makeFavBtn(style.name), label, val);
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
     if (state.multiSelect) {
       toggleSelection(style.name);
+      return;
+    }
+    const ta = $('#text');
+    const hasSel = ta.selectionStart !== ta.selectionEnd;
+    const forceCopy = e.shiftKey;
+
+    if (hasSel && !forceCopy) {
+      applyStyleToSelection(style, btn);
     } else {
-      const text = style.fn(getInputText());
-      copyText(text);
-      addToHistory(text, style.name);
-      addToRecent(style.name);
-      btn.classList.add('copied');
-      setTimeout(() => btn.classList.remove('copied'), 900);
+      copyStyleToClipboard(style, btn, hasSel);
     }
   });
   return btn;
+}
+
+function copyStyleToClipboard(style, cardEl, wasSelection){
+  let text;
+  if (wasSelection) {
+    const ta = $('#text');
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    text = style.fn(ta.value.slice(start, end));
+  } else {
+    text = style.fn(getInputText());
+  }
+  copyText(text);
+  addToHistory(text, style.name);
+  addToRecent(style.name);
+  cardEl.classList.add('copied');
+  setTimeout(() => cardEl.classList.remove('copied'), 900);
+}
+
+function applyStyleToSelection(style, cardEl){
+  const ta = $('#text');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  if (start === end) return;
+
+  const selected = ta.value.slice(start, end);
+  // Zaten stillenmiş karakterler varsa önce sadeleştir (zincirleme çalışsın)
+  const hasStyled = /[^\x00-\x7F]/.test(selected);
+  const baseText = hasStyled ? unstyle(selected) : selected;
+  const styledSelection = style.fn(baseText);
+
+  const before = ta.value.slice(0, start);
+  const after = ta.value.slice(end);
+  ta.value = before + styledSelection + after;
+
+  ta.setSelectionRange(start, start + styledSelection.length);
+  ta.focus();
+
+  ta.dispatchEvent(new Event('input'));
+  pushUndoState();
+  addToRecent(style.name);
+  updateSelectionState();
+
+  playSound('apply');
+  cardEl.classList.add('applied');
+  setTimeout(() => cardEl.classList.remove('applied'), 900);
+  showToast(`"${style.name}" seçime uygulandı`, 'Geri al', undo);
 }
 
 function renderStyleGrid(){
@@ -1302,9 +1494,7 @@ function renderStyleGrid(){
   let list;
 
   if (state.activeTab === 'recent') {
-    list = state.recent
-      .map(name => STYLES.find(s => s.name === name))
-      .filter(Boolean);
+    list = state.recent.map(name => STYLES.find(s => s.name === name)).filter(Boolean);
   } else {
     list = STYLES.filter(s => {
       if (state.activeTab === 'fav' && !state.favorites.has(s.name)) return false;
@@ -1313,14 +1503,13 @@ function renderStyleGrid(){
       return true;
     });
   }
-
   if (q) list = list.filter(s => s.name.toLowerCase().includes(q));
 
   grid.innerHTML = '';
   if (!list.length) {
     let msg = '';
     if (state.activeTab === 'fav') msg = 'Henüz favori yok. Kartların sağ üstündeki yıldıza tıkla.';
-    else if (state.activeTab === 'recent') msg = 'Henüz stil kopyalamadın. Bir stile tıkladığında burada görünecek.';
+    else if (state.activeTab === 'recent') msg = 'Henüz stil kullanmadın. Bir stile tıkladığında burada görünecek.';
     else msg = `"${escapeHtml(state.search)}" için sonuç bulunamadı.`;
     grid.innerHTML = `<div class="empty-state"><span class="empty-icon">🔍</span><p>${msg}</p></div>`;
   } else {
@@ -1482,7 +1671,7 @@ function fillStyleSelects(){
 }
 
 /* =========================================================
-   10) TEMA & AKSAN
+   14) TEMA & AKSAN
    ========================================================= */
 function applyTheme(theme){
   state.theme = theme;
@@ -1499,7 +1688,7 @@ function applyAccent(accent){
 function toggleTheme(){ applyTheme(state.theme === 'dark' ? 'light' : 'dark'); }
 
 /* =========================================================
-   11) KARŞILAŞTIRMA
+   15) KARŞILAŞTIRMA
    ========================================================= */
 function setCompareMode(on){
   state.compareMode = on;
@@ -1524,7 +1713,7 @@ function adoptCompareStyle(side){
 }
 
 /* =========================================================
-   12) ÇOKLU SEÇİM
+   16) ÇOKLU SEÇİM
    ========================================================= */
 function setMultiMode(on){
   state.multiSelect = on;
@@ -1562,7 +1751,7 @@ function copySelected(){
 }
 
 /* =========================================================
-   13) HIZLI ARAÇLAR
+   17) HIZLI ARAÇLAR
    ========================================================= */
 function applyTool(tool){
   const ta = $('#text');
@@ -1578,6 +1767,7 @@ function applyTool(tool){
   if (nv !== v) {
     ta.value = nv;
     ta.dispatchEvent(new Event('input'));
+    pushUndoState();
     ta.focus();
   }
 }
@@ -1591,6 +1781,7 @@ function insertAtCursor(text){
   ta.selectionStart = ta.selectionEnd = start + text.length;
   ta.focus();
   ta.dispatchEvent(new Event('input'));
+  pushUndoState();
 }
 
 function randomNick(){
@@ -1608,29 +1799,41 @@ function clearInput(){
   if (!backup) return;
   ta.value = '';
   ta.dispatchEvent(new Event('input'));
+  pushUndoState();
   ta.focus();
-  showToast('Temizlendi', 'Geri al', () => {
-    ta.value = backup;
-    ta.dispatchEvent(new Event('input'));
-    ta.focus();
-  });
+  showToast('Temizlendi', 'Geri al', undo);
+}
+
+function simplifyText(){
+  const ta = $('#text');
+  if (!ta.value.trim()) { showToast('Önce bir şey yaz ✍'); playSound('error'); return; }
+  let start = ta.selectionStart, end = ta.selectionEnd;
+  const hasSel = start !== end;
+  if (!hasSel) { start = 0; end = ta.value.length; }
+
+  const selected = ta.value.slice(start, end);
+  const cleaned = unstyle(selected);
+  if (cleaned === selected) {
+    showToast('Sadeleştirilecek bir süs yok');
+    return;
+  }
+  ta.value = ta.value.slice(0, start) + cleaned + ta.value.slice(end);
+  ta.setSelectionRange(start, start + cleaned.length);
+  ta.focus();
+  ta.dispatchEvent(new Event('input'));
+  pushUndoState();
+  playSound('apply');
+  showToast(hasSel ? 'Seçim sadeleştirildi ✓' : 'Tüm metin sadeleştirildi ✓');
 }
 
 /* =========================================================
-   14) URL İLE PAYLAŞIM
+   18) URL PAYLAŞIM
    ========================================================= */
 function encodeState(){
   const s = {
-    t: $('#text').value,
-    p: state.previewStyle,
-    z: state.previewSize,
-    a: state.accent,
-    th: state.theme,
-    pr: state.customPrefix,
-    su: state.customSuffix,
-    ca: state.compareA,
-    cb: state.compareB,
-    c: state.compareMode ? 1 : 0
+    t: $('#text').value, p: state.previewStyle, z: state.previewSize,
+    a: state.accent, th: state.theme, pr: state.customPrefix, su: state.customSuffix,
+    ca: state.compareA, cb: state.compareB, c: state.compareMode ? 1 : 0
   };
   try { return btoa(unescape(encodeURIComponent(JSON.stringify(s)))); }
   catch { return ''; }
@@ -1645,10 +1848,9 @@ function decodeState(encoded){
 
 async function shareSetup(){
   const token = encodeState();
-  if (!token) { showToast('Paylaşım oluşturulamadı', 'Hata'); playSound('error'); return; }
+  if (!token) { showToast('Paylaşım oluşturulamadı'); playSound('error'); return; }
   const url = `${location.origin}${location.pathname}#s=${token}`;
   await copyText(url, { silent: true });
-  playSound('copy');
   showToast('Kurulum linki kopyalandı 🔗');
 }
 
@@ -1667,27 +1869,71 @@ function loadFromHash(){
   if (STYLES.some(x => x.name === s.ca)) state.compareA = s.ca;
   if (STYLES.some(x => x.name === s.cb)) state.compareB = s.cb;
   state.compareMode = !!s.c;
-  // Temizle hash — tekrar yüklemeyi önle
   history.replaceState(null, '', location.pathname + location.search);
   return true;
 }
 
 /* =========================================================
-   15) OLAYLAR
+   19) OLAYLAR
    ========================================================= */
 function bindEvents(){
   const input = $('#text');
-
   let inputRaf = 0;
+
   input.addEventListener('input', () => {
-    const len = input.value.length;
-    const c = $('#count');
-    c.textContent = `${len} / 80`;
-    c.classList.toggle('warn', len >= 60 && len < 75);
-    c.classList.toggle('danger', len >= 75);
+    updateCount();
     safeSave(LS.text, input.value);
     cancelAnimationFrame(inputRaf);
     inputRaf = requestAnimationFrame(updateAllValues);
+
+    // Undo checkpoint (debounce)
+    clearTimeout(state.undoDebounce);
+    state.undoDebounce = setTimeout(() => pushUndoState(), 500);
+  });
+
+  // Selection tracking
+  const onSelChange = () => {
+    if (document.activeElement === input) updateSelectionState();
+  };
+  input.addEventListener('select', onSelChange);
+  input.addEventListener('mouseup', onSelChange);
+  input.addEventListener('keyup', onSelChange);
+  input.addEventListener('focus', updateSelectionState);
+  input.addEventListener('blur', () => {
+    // Keep selection active visually but hide indicator after blur? Let's keep it visible
+    // because the user might click a card right after selecting.
+    // Actually hide only when they click elsewhere that isn't a card.
+    setTimeout(() => {
+      if (document.activeElement !== input) {
+        const sel = document.getElementById('selectionIndicator');
+        // Keep visible if selection exists — user may be about to click a card
+        if (input.selectionStart === input.selectionEnd) sel.hidden = true;
+      }
+    }, 100);
+  });
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === input) updateSelectionState();
+  });
+
+  // Keyboard: Ctrl+Z undo/redo (intercept because we reset .value)
+  input.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      if (e.shiftKey) redo();
+      else undo();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+      e.preventDefault();
+      redo();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      if (input.selectionStart !== input.selectionEnd) {
+        input.setSelectionRange(input.selectionEnd, input.selectionEnd);
+        updateSelectionState();
+        input.focus();
+      } else {
+        clearInput();
+      }
+    }
   });
 
   // Quick tools
@@ -1695,18 +1941,16 @@ function bindEvents(){
     b.addEventListener('click', () => applyTool(b.dataset.tool));
   });
 
-  // Random nick
   $('#randomNickBtn').addEventListener('click', () => {
     const n = randomNick();
     input.value = n;
     input.dispatchEvent(new Event('input'));
+    pushUndoState();
     showToast(`🎲 ${n}`);
   });
 
-  // Clear
   $('#clearBtn').addEventListener('click', clearInput);
 
-  // Paste
   $('#pasteBtn').addEventListener('click', async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -1718,14 +1962,12 @@ function bindEvents(){
     }
   });
 
-  // Copy plain
   $('#copyPlain').addEventListener('click', () => {
     const t = input.value.trim();
     if (!t) { showToast('Önce bir şey yaz ✍'); playSound('error'); return; }
     copyText(t);
   });
 
-  // Download
   $('#downloadBtn').addEventListener('click', () => {
     const txt = getInputText();
     let content = `Nick Studio — ${txt}\n${'='.repeat(40)}\n\n`;
@@ -1744,6 +1986,21 @@ function bindEvents(){
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     showToast('Dosya indirildi ✓');
+  });
+
+  // Undo / redo buttons
+  $('#undoBtn').addEventListener('click', undo);
+  $('#redoBtn').addEventListener('click', redo);
+
+  // Simplify button
+  $('#unstyleBtn').addEventListener('click', simplifyText);
+
+  // Deselect
+  document.getElementById('deselectBtn').addEventListener('click', () => {
+    const ta = $('#text');
+    ta.setSelectionRange(ta.selectionEnd, ta.selectionEnd);
+    ta.focus();
+    updateSelectionState();
   });
 
   // Emoji
@@ -1787,7 +2044,6 @@ function bindEvents(){
     updateCompare();
   });
 
-  // Random style
   $('#randomBtn').addEventListener('click', () => {
     const pool = STYLES.filter(s => s.name !== state.previewStyle);
     const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -1801,7 +2057,7 @@ function bindEvents(){
     setTimeout(() => el.classList.remove('pop'), 180);
   });
 
-  // Preview text → copy
+  // Preview text click → copy
   const previewEl = $('#previewText');
   function copyPreview(){
     const txt = $('#text').value;
@@ -1819,7 +2075,6 @@ function bindEvents(){
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyPreview(); }
   });
 
-  // Share text
   $('#shareBtn').addEventListener('click', () => {
     const txt = $('#text').value;
     if (!txt.trim()) { showToast('Önce bir şey yaz ✍'); return; }
@@ -1827,11 +2082,10 @@ function bindEvents(){
     shareText(style.fn(txt));
   });
 
-  // Compare mode toggle
+  // Compare
   $('#compareBtn').addEventListener('click', () => setCompareMode(!state.compareMode));
   $('#exitCompareBtn').addEventListener('click', () => setCompareMode(false));
 
-  // Compare style selects
   document.querySelectorAll('.compare-style').forEach(sel => {
     sel.addEventListener('change', e => {
       const side = e.target.dataset.side;
@@ -1841,7 +2095,6 @@ function bindEvents(){
     });
   });
 
-  // Compare text click = adopt
   document.querySelectorAll('.compare-text').forEach(el => {
     el.addEventListener('click', () => adoptCompareStyle(el.dataset.side));
     el.addEventListener('keydown', e => {
@@ -1849,7 +2102,6 @@ function bindEvents(){
     });
   });
 
-  // Compare adopt button
   document.querySelectorAll('.compare-adopt').forEach(btn => {
     btn.addEventListener('click', () => adoptCompareStyle(btn.dataset.side));
   });
@@ -1892,7 +2144,6 @@ function bindEvents(){
     $('#stylesSection').scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
-  // Clear history
   $('#clearHistory').addEventListener('click', () => {
     state.history = [];
     safeSave(LS.history, []);
@@ -1922,15 +2173,15 @@ function bindEvents(){
   $('#multiCancel').addEventListener('click', () => setMultiMode(false));
   $('#multiCopy').addEventListener('click', copySelected);
 
-  // Keyboard
+  // Global keyboard
   document.addEventListener('keydown', e => {
     const tag = (e.target.tagName || '').toLowerCase();
     const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
 
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      if (e.shiftKey) { setCompareMode(!state.compareMode); }
-      else { $('#text').focus(); }
+      if (e.shiftKey) setCompareMode(!state.compareMode);
+      else $('#text').focus();
       return;
     }
     if (inField) return;
@@ -1942,101 +2193,73 @@ function bindEvents(){
       else if (state.compareMode) setCompareMode(false);
     }
   });
-
-  // Esc in textarea
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { e.preventDefault(); clearInput(); }
-  });
 }
 
 /* =========================================================
-   16) BAŞLAT
+   20) BAŞLAT
    ========================================================= */
 function init(){
-  // Önce URL hash varsa onu yükle (localStorage'dan sonra)
+  buildUnstyleMap();
   const fromHash = loadFromHash();
 
-  // Tema
   const savedTheme = localStorage.getItem(LS.theme);
   const systemTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
   const initialTheme = fromHash ? state.theme : (savedTheme ? JSON.parse(savedTheme) : systemTheme);
   applyTheme(['dark','light'].includes(initialTheme) ? initialTheme : 'dark');
 
-  // Aksan
   const savedAccent = fromHash ? state.accent : safeParse(LS.accent, 'purple');
   applyAccent(['purple','pink','cyan','green','orange','blue'].includes(savedAccent) ? savedAccent : 'purple');
 
-  // Ses
   state.soundOn = !!safeParse(LS.sound, false);
   $('#soundToggle').setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
   $('#soundToggle').textContent = state.soundOn ? '🔊' : '🔇';
 
-  // Favoriler
   state.favorites = new Set(safeParse(LS.favorites, []) || []);
   updateFavCount();
 
-  // Geçmiş & recent
   state.history = safeParse(LS.history, []) || [];
   state.recent = safeParse(LS.recent, []) || [];
 
-  // Kopyalama sayacı
   state.copyCount = parseInt(localStorage.getItem(LS.copyCount) || '0', 10) || 0;
   updateStats();
 
-  // Önizleme
   if (!fromHash) {
     const ps = safeParse(LS.preview, 'Kalın');
     state.previewStyle = STYLES.some(s => s.name === ps) ? ps : 'Kalın';
     const pz = safeParse(LS.size, 44);
     state.previewSize = typeof pz === 'number' && pz >= 20 && pz <= 72 ? pz : 44;
-  } else {
-    $('#previewSize').value = state.previewSize;
-  }
-
-  // Compare
-  if (!fromHash) {
     state.compareMode = !!safeParse(LS.compare, false);
     const ca = safeParse(LS.compareA, 'Kalın');
     const cb = safeParse(LS.compareB, 'El Yazısı');
     state.compareA = STYLES.some(s => s.name === ca) ? ca : 'Kalın';
     state.compareB = STYLES.some(s => s.name === cb) ? cb : 'El Yazısı';
-  }
-
-  // Wrapper
-  if (!fromHash) {
     state.customPrefix = safeParse(LS.prefix, '') || '';
     state.customSuffix = safeParse(LS.suffix, '') || '';
+    const savedText = localStorage.getItem(LS.text);
+    if (savedText !== null) $('#text').value = savedText;
+  } else {
+    $('#previewSize').value = state.previewSize;
   }
   $('#prefixInput').value = state.customPrefix;
   $('#suffixInput').value = state.customSuffix;
 
-  // Text
-  if (!fromHash) {
-    const savedText = localStorage.getItem(LS.text);
-    if (savedText !== null) $('#text').value = savedText;
-  }
-
-  // Multi
   if (!fromHash && safeParse(LS.multi, false)) setMultiMode(true);
 
-  // Render
   fillStyleSelects();
   $('#previewSize').value = state.previewSize;
   renderTabs();
   renderStyleGrid();
   renderDecorGrid();
   renderHistory();
-
-  // Sayaç
-  const len = $('#text').value.length;
-  const c = $('#count');
-  c.textContent = `${len} / 80`;
-  c.classList.toggle('warn', len >= 60 && len < 75);
-  c.classList.toggle('danger', len >= 75);
+  updateCount();
 
   renderPlatformBadges();
   updatePreview();
   if (state.compareMode) setCompareMode(true);
+
+  // Seed undo stack
+  undoStack.push($('#text').value);
+  updateUndoButtons();
 
   bindEvents();
   $('#text').focus();
